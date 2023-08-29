@@ -1,0 +1,114 @@
+import React, { useContext } from "react";
+import styled, { keyframes } from "styled-components";
+import { Context } from "../../Context/ProductContext";
+import { ProductContextState } from "../../Types/Product";
+import CartCard from "../CartCard/CartCard";
+
+const fadeIn = keyframes`
+    0% {opacity: 0%},
+    100% {opacity: 100%}
+`;
+const Container = styled.div`
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.2);
+  background: white;
+  margin-bottom: 50px;
+  background-color: ${(props) => props.theme.body};
+  animation: ${fadeIn} 1s;
+`;
+const CartBalance = styled.h3`
+  padding: 3px;
+  border-bottom: 1px solid ${(props) => props.theme.border};
+`;
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  padding: 10px;
+  height: 80%;
+`;
+const BottomWrapper = styled.div`
+  display: flex;
+  justify-content: right;
+  padding: 5px;
+  border-bottom: 1px solid ${(props) => props.theme.border};
+`;
+const FinalWrapper = styled.div`
+  display: flex;
+  justify-content: right;
+  padding-top: 15px;
+  padding-inline: 5px;
+`;
+const Title = styled.div`
+  flex: 1;
+  padding-bottom: 5px;
+  font-size: 14px;
+`;
+const DollarAmount = styled.div`
+  font-size: 16px;
+`;
+const Total = styled.div`
+  flex: 1;
+  font-weight: bold;
+  font-size: 20px;
+  padding-bottom: 5px;
+`;
+
+const CartBalanceCard: React.FC = () => {
+    const { products, cartTotal } = useContext(Context) as ProductContextState;
+
+    let subtotal = cartTotal(products);
+
+    let shipping: number;
+
+    let taxes: number = subtotal * 1.19;
+
+    if (taxes > 952.30) {
+        shipping = 0;
+    } else shipping = 5;
+
+    let total = (taxes + shipping).toFixed(2);
+
+    return (
+        <Container>
+            <CartBalance>Cart Summary</CartBalance>
+            {products.map((product, index) => {
+                return (
+                    <CartCard
+                        key={index}
+                        itemId={product.itemId}
+                        imageUrl={product.imageUrl}
+                        name={product.name}
+                        description={product.description}
+                        price={product.price}
+                        amount={product.amount}
+                        itemOrder={index + 1}
+                    />
+                );
+            })}
+            <Wrapper>
+                <BottomWrapper>
+                    <Title>Subtotal </Title>
+                    <DollarAmount>${subtotal.toFixed(2)}</DollarAmount>
+                </BottomWrapper>
+                <BottomWrapper>
+                    <Title>Shipping </Title>
+                    <DollarAmount>${shipping.toFixed(2)}</DollarAmount>
+                </BottomWrapper>
+                <BottomWrapper>
+                    <Title>Tax </Title>
+                    <DollarAmount>${taxes.toFixed(2)}</DollarAmount>
+                </BottomWrapper>
+                <FinalWrapper>
+                    <Total>Total </Total>
+                    <DollarAmount>${total}</DollarAmount>
+                </FinalWrapper>
+            </Wrapper>
+        </Container>
+    );
+};
+
+export default CartBalanceCard;
